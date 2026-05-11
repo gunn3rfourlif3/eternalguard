@@ -1,26 +1,23 @@
 @import "tailwindcss";
 
+@theme {
+  /* Brighter Light Palette */
+  --color-obsidian: #ffffff;      /* Main background white */
+  --color-slate: #f8f9fa;        /* Light gray for sections/cards */
+  --color-eternal-gold: #b38728; /* Slightly deeper gold for readability on white */
+  --color-safety-blue: #0056b3;  /* Deeper blue for contrast */
+  --color-border-subtle: #e9ecef;
+
+  /* Custom Gradients - Refined for Light Theme */
+  --background-image-gold-gradient: linear-gradient(
+    to bottom right,
+    #d4af37,
+    #fcf6ba,
+    #aa771c
+  );
+}
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: #fcfcfc;
+  color: #1a1a1b; /* Dark text for light mode */
 }
