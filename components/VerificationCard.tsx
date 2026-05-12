@@ -1,16 +1,18 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { ChevronRight } from "lucide-react";
+import { ChevronRight, CheckCircle2, AlertCircle } from "lucide-react";
 import GlassCard from "./GlassCard";
 
 interface VerificationCardProps {
   percentage: number;
+  isPremiumPaid: boolean;
   t: any;
+  onViewPayments: () => void; // Function to trigger the PaymentHistory view
 }
 
-export default function VerificationCard({ percentage, t }: VerificationCardProps) {
-  const strokeDasharray = 251.2; // 2 * pi * radius (40)
+export default function VerificationCard({ percentage, isPremiumPaid, t, onViewPayments }: VerificationCardProps) {
+  const strokeDasharray = 251.2;
   const offset = strokeDasharray - (percentage / 100) * strokeDasharray;
 
   return (
@@ -45,16 +47,33 @@ export default function VerificationCard({ percentage, t }: VerificationCardProp
           </div>
         </div>
 
-        {/* Status Text */}
+        {/* Info Section with Premium Toggle */}
         <div className="flex-1">
-          <h4 className="font-black text-sm uppercase tracking-tight text-slate-900 leading-tight">
-            {t.verification_title || "Information Verified"}
-          </h4>
-          <p className="text-[11px] text-slate-500 mt-1 font-medium leading-relaxed">
-            {t.verification_desc || "Eligibility Pending: All documents and claims information are under review for granting."}
+          <div className="flex items-center gap-2 mb-1">
+            <h4 className="font-black text-sm uppercase tracking-tight text-slate-900 leading-tight">
+              {t.verification_title || "Information Verified"}
+            </h4>
+            <div className={`flex items-center gap-1 px-2 py-0.5 rounded-full text-[8px] font-black uppercase tracking-tighter ${
+              isPremiumPaid ? "bg-emerald-50 text-emerald-600" : "bg-amber-50 text-amber-600"
+            }`}>
+              {isPremiumPaid ? <CheckCircle2 size={10} /> : <AlertCircle size={10} />}
+              {isPremiumPaid ? "Up to Date" : "Premium Required"}
+            </div>
+          </div>
+          
+          <p className="text-[11px] text-slate-500 font-medium leading-relaxed">
+            {isPremiumPaid 
+              ? "Your account is active and protected. All claims documentation is verified."
+              : "Eligibility Pending: Outstanding premiums required to finalize your active protection status."
+            }
           </p>
-          <button className="mt-3 flex items-center gap-1 text-[10px] font-bold text-eternal-gold uppercase tracking-widest group">
-            {t.continue_setup || "Continue Setup"}
+
+          {/* Action Link to PaymentHistory.tsx */}
+          <button 
+            onClick={onViewPayments}
+            className="mt-3 flex items-center gap-1 text-[10px] font-bold text-eternal-gold uppercase tracking-widest group cursor-pointer hover:underline"
+          >
+            {isPremiumPaid ? "View Payment History" : "Pay Premium & View History"}
             <ChevronRight size={12} className="group-hover:translate-x-1 transition-transform" />
           </button>
         </div>
