@@ -1,75 +1,74 @@
 "use client";
 
+import { useState } from "react";
 import { motion } from "framer-motion";
-import { Users, UserPlus, ShieldCheck, Mail, Phone, MoreVertical } from "lucide-react";
+import { Users, UserPlus, ShieldCheck, Clock, Mail } from "lucide-react";
 
-const guardians = [
-  { id: 1, name: "Sarah Venter", relation: "Spouse", status: "Active", contact: "+27 82 123 4567" },
-  { id: 2, name: "David Kumalo", relation: "Legal Representative", status: "Pending", contact: "david@law.co.za" },
-];
+interface GuardiansViewProps {
+  t: {
+    guardians_title?: string;
+    guardians_desc?: string;
+    invite_guardian?: string;
+    trusted_contact?: string;
+    pending_invite?: string;
+    verified_status?: string;
+  };
+}
 
-export default function GuardiansView() {
+export default function GuardiansView({ t }: GuardiansViewProps) {
+  const [guardians] = useState([
+    { id: 1, name: "Sarah Venter", type: "trusted", status: "Verified" },
+    { id: 2, name: "Michael Zuma", type: "trusted", status: "Verified" },
+    { id: 3, name: "Elena Roberts", type: "pending", status: "Pending" },
+  ]);
+
   return (
     <div className="w-full max-w-sm flex flex-col gap-4 mt-8">
-      {/* Header section */}
       <div className="flex items-center justify-between px-2">
-        <div>
-          <h3 className="text-lg font-bold text-slate-800">Guardians</h3>
-          <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Your Trust Circle</p>
-        </div>
-        <button className="bg-eternal-gold text-white p-2 rounded-full shadow-lg shadow-eternal-gold/20 active:scale-90 transition-transform">
-          <UserPlus size={20} />
+        <h3 className="text-lg font-bold text-slate-800">{t.guardians_title || "Circle of Guardians"}</h3>
+        <button className="text-eternal-gold text-xs font-bold flex items-center gap-1">
+          <UserPlus size={14} />
+          {t.invite_guardian || "Invite"}
         </button>
       </div>
 
-      {/* Guardians List */}
-      <div className="flex flex-col gap-3">
-        {guardians.map((guardian) => (
-          <motion.div 
-            key={guardian.id}
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="bg-white border border-slate-100 p-4 rounded-3xl shadow-sm"
+      <div className="space-y-3">
+        {guardians.map((person) => (
+          <div 
+            key={person.id}
+            className="bg-white border border-slate-100 p-4 rounded-2xl shadow-sm flex items-center justify-between"
           >
-            <div className="flex justify-between items-start">
-              <div className="flex gap-4">
-                <div className="w-12 h-12 bg-slate-50 rounded-2xl flex items-center justify-center text-slate-400">
-                  <Users size={24} />
-                </div>
-                <div>
-                  <h4 className="text-sm font-bold text-slate-800">{guardian.name}</h4>
-                  <p className="text-[11px] text-slate-500 font-medium">{guardian.relation}</p>
-                </div>
+            <div className="flex items-center gap-4">
+              <div className="w-10 h-10 bg-slate-50 rounded-full flex items-center justify-center text-slate-400">
+                <Users size={20} />
               </div>
-              <div className={`px-2 py-1 rounded-full text-[9px] font-bold uppercase tracking-tighter ${
-                guardian.status === 'Active' ? 'bg-emerald-50 text-emerald-600' : 'bg-slate-100 text-slate-400'
-              }`}>
-                {guardian.status}
+              <div>
+                <p className="text-sm font-bold text-slate-800">{person.name}</p>
+                <p className="text-[10px] text-slate-400 uppercase font-bold tracking-tight">
+                  {person.type === "trusted" ? (t.trusted_contact || "Trusted Contact") : (t.pending_invite || "Pending Invite")}
+                </p>
               </div>
             </div>
-
-            <div className="mt-4 pt-4 border-t border-slate-50 flex items-center justify-between">
-              <div className="flex gap-3">
-                <div className="flex items-center gap-1 text-[10px] text-slate-400 font-medium">
-                  <Phone size={12} /> {guardian.contact.includes('+') ? guardian.contact : 'Email Set'}
-                </div>
+            {person.status === "Verified" ? (
+              <div className="flex items-center gap-1 text-emerald-500 bg-emerald-50 px-2 py-1 rounded-full">
+                <ShieldCheck size={12} />
+                <span className="text-[10px] font-bold uppercase">{t.verified_status || "Verified"}</span>
               </div>
-              <button className="text-slate-300">
-                <MoreVertical size={16} />
-              </button>
-            </div>
-          </motion.div>
+            ) : (
+              <div className="flex items-center gap-1 text-amber-500 bg-amber-50 px-2 py-1 rounded-full">
+                <Clock size={12} />
+                <span className="text-[10px] font-bold uppercase">{t.pending_invite || "Pending"}</span>
+              </div>
+            )}
+          </div>
         ))}
       </div>
 
-      {/* Info Card */}
-      <div className="mt-2 p-5 bg-safety-blue/5 rounded-3xl border border-safety-blue/10">
-        <div className="flex gap-4">
-          <div className="text-safety-blue mt-1">
-            <ShieldCheck size={20} />
-          </div>
-          <p className="text-[11px] text-slate-600 leading-relaxed">
-            Guardians can only unlock your vault after a **verified claim event**. They will receive a secure key via WhatsApp to begin the process.
+      <div className="mt-4 p-4 bg-blue-50/50 rounded-2xl border border-blue-100">
+        <div className="flex gap-3">
+          <Mail size={16} className="text-blue-400 mt-0.5" />
+          <p className="text-[11px] text-blue-600/80 leading-relaxed">
+            {t.guardians_desc || "Guardians are notified only during a claim event."}
           </p>
         </div>
       </div>

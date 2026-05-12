@@ -4,45 +4,70 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Lock, FileText, CheckCircle2, AlertCircle, UploadCloud, Loader2 } from "lucide-react";
 
-export default function VaultView() {
+interface VaultViewProps {
+  t: {
+    vault_title?: string;
+    vault_desc?: string;
+    encrypting?: string;
+    add_new?: string;
+    id_doc?: string;
+    policy_doc?: string;
+    residence_doc?: string;
+    secure?: string;
+    needs_attention?: string;
+  };
+}
+
+export default function VaultView({ t }: VaultViewProps) {
   const [isUploading, setIsUploading] = useState(false);
-  const [docs, setDocs] = useState([
-    { id: 1, name: "Identity Document", status: "Verified", date: "2026-04-12" },
-    { id: 2, name: "Funeral Policy Schedule", status: "Verified", date: "2026-04-15" },
-    { id: 3, name: "Proof of Residence", status: "Action Required", date: "Expired" },
+  
+  // Keep only the dynamic data in state, not the translated labels
+  const [userDocs, setUserDocs] = useState([
+    { id: 1, type: 'id', status: 'Verified', date: "2026-04-12" },
+    { id: 2, type: 'policy', status: 'Verified', date: "2026-04-15" },
+    { id: 3, type: 'residence', status: 'Action Required', date: "Expired" },
   ]);
 
   const simulateUpload = () => {
     setIsUploading(true);
-    // Simulate a 2-second encryption and upload process
     setTimeout(() => {
       const newDoc = {
         id: Date.now(),
-        name: "New Document.pdf",
-        status: "Verified",
+        type: 'new',
+        status: 'Verified',
         date: new Date().toISOString().split('T')[0]
       };
-      setDocs([newDoc, ...docs]);
+      setUserDocs([newDoc, ...userDocs]);
       setIsUploading(false);
     }, 2000);
+  };
+
+  // Helper to get the correct translation based on type
+  const getDocTitle = (type: string) => {
+    switch(type) {
+      case 'id': return t.id_doc || "Identity Document";
+      case 'policy': return t.policy_doc || "Funeral Policy Schedule";
+      case 'residence': return t.residence_doc || "Proof of Residence";
+      default: return "New Document.pdf";
+    }
   };
 
   return (
     <div className="w-full max-w-sm flex flex-col gap-4 mt-8">
       <div className="flex items-center justify-between px-2">
-        <h3 className="text-lg font-bold text-slate-800">Your Documents</h3>
+        <h3 className="text-lg font-bold text-slate-800">{t.vault_title || "Your Documents"}</h3>
         <button 
           onClick={simulateUpload}
           disabled={isUploading}
           className="text-eternal-gold text-xs font-bold flex items-center gap-1 disabled:opacity-50"
         >
           {isUploading ? <Loader2 size={14} className="animate-spin" /> : <UploadCloud size={14} />}
-          {isUploading ? "Encrypting..." : "Add New"}
+          {isUploading ? (t.encrypting || "Encrypting...") : (t.add_new || "Add New")}
         </button>
       </div>
 
       <AnimatePresence>
-        {docs.map((doc) => (
+        {userDocs.map((doc) => (
           <motion.div 
             key={doc.id}
             initial={{ opacity: 0, y: 10 }}
@@ -56,9 +81,10 @@ export default function VaultView() {
                 <FileText size={20} />
               </div>
               <div>
-                <p className="text-sm font-bold text-slate-800">{doc.name}</p>
+                {/* Titles now update instantly because they call getDocTitle during render */}
+                <p className="text-sm font-bold text-slate-800">{getDocTitle(doc.type)}</p>
                 <p className="text-[10px] text-slate-400 uppercase tracking-tighter font-medium">
-                  {doc.status === 'Verified' ? `Secure · ${doc.date}` : 'Needs Attention'}
+                  {doc.status === 'Verified' ? `${t.secure || "Secure"} · ${doc.date}` : (t.needs_attention || 'Needs Attention')}
                 </p>
               </div>
             </div>
@@ -75,7 +101,7 @@ export default function VaultView() {
         <div className="flex gap-3">
           <Lock size={16} className="text-slate-400 mt-0.5" />
           <p className="text-[11px] text-slate-500 leading-relaxed">
-            EternalGuard uses **Zero-Knowledge Encryption**. Your documents are encrypted before they even leave your device.
+            {t.vault_desc || "EternalGuard uses Zero-Knowledge Encryption."}
           </p>
         </div>
       </div>

@@ -3,6 +3,9 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ShieldCheck, Lock, Users, Zap, Bell, Heart, Briefcase, Activity } from "lucide-react";
+import { locales, LocaleKey } from "../lib/locales";
+
+// Component Imports
 import VaultView from "../components/VaultView";
 import GuardiansView from "../components/GuardiansView";
 import ClaimFlow from "../components/ClaimFlow";
@@ -13,6 +16,27 @@ import LegacyView from "../components/LegacyView";
 
 export default function Home() {
   const [activeTab, setActiveTab] = useState("home");
+  const [lang, setLang] = useState<LocaleKey>("en");
+  
+  // Dynamic user name state
+  const [userName] = useState("Vernon");
+
+  const t = locales[lang];
+
+  /**
+   * Helper function to replace {{name}} placeholders in translation strings.
+   * Defined inside the component to prevent ReferenceErrors.
+   */
+  const format = (str: string, name: string) => {
+    if (!str) return "";
+    return str.replace(/{{name}}/g, name);
+  };
+
+  const toggleLanguage = () => {
+    const keys = Object.keys(locales) as LocaleKey[];
+    const nextIndex = (keys.indexOf(lang) + 1) % keys.length;
+    setLang(keys[nextIndex]);
+  };
 
   return (
     <main className="min-h-screen bg-[#FDFDFD] text-slate-900 flex flex-col items-center p-6 pb-32">
@@ -23,11 +47,19 @@ export default function Home() {
           <div className="w-10 h-10 bg-gold-gradient rounded-xl flex items-center justify-center shadow-md">
             <ShieldCheck size={20} className="text-white" />
           </div>
-          <h1 className="text-lg font-bold tracking-tight text-slate-900">EternalGuard</h1>
+          <h1 className="text-lg font-bold tracking-tight text-slate-900">{t.brand}</h1>
         </div>
-        <button className="p-2 bg-slate-100 rounded-full text-slate-400 hover:text-slate-600 transition-colors">
-          <Bell size={20} />
-        </button>
+        <div className="flex items-center gap-2">
+          <button 
+            onClick={toggleLanguage}
+            className="px-3 py-1 bg-slate-100 rounded-full text-[10px] font-bold text-slate-500 uppercase tracking-tight hover:bg-slate-200 transition-colors"
+          >
+            {t.lang_name}
+          </button>
+          <button className="p-2 bg-slate-100 rounded-full text-slate-400 hover:text-slate-600 transition-colors">
+            <Bell size={20} />
+          </button>
+        </div>
       </div>
 
       <div className="w-full max-w-sm">
@@ -40,128 +72,62 @@ export default function Home() {
               exit={{ opacity: 0, x: 10 }}
               className="w-full flex flex-col items-center"
             >
-              {/* The Status Card */}
+              {/* Status Card */}
               <div className="w-full mt-8 bg-white rounded-3xl p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-100 relative overflow-hidden">
                 <div className="flex items-center justify-between mb-4">
                   <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Insurance Status</span>
                   <div className="px-2 py-1 bg-emerald-50 rounded-full flex items-center gap-1.5">
                     <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-                    <span className="text-[10px] font-bold text-emerald-600 uppercase">Active</span>
+                    <span className="text-[10px] font-bold text-emerald-600 uppercase">{t.status}</span>
                   </div>
                 </div>
-                <h2 className="text-2xl font-bold text-slate-800">Venter Family Plan</h2>
-                <p className="text-sm text-slate-500 mt-1">Your coverage is up to date.</p>
+                
+                {/* Dynamically injected owner name */}
+                <h2 className="text-2xl font-bold text-slate-800">
+                  {format(t.plan_name, userName)}
+                </h2>
+                <p className="text-sm text-slate-500 mt-1">
+                  {format(t.plan_status, userName)}
+                </p>
+                
                 <div className="absolute -right-6 -bottom-6 w-24 h-24 bg-eternal-gold/5 blur-2xl rounded-full"></div>
               </div>
 
-              {/* Grid with explicit tab triggers */}
-      <div className="grid grid-cols-2 gap-4 w-full mt-6">
-  {/* Row 1 */}
-  <MenuButton 
-    onClick={() => setActiveTab("vault")} 
-    icon={<Lock size={20}/>} 
-    label="The Vault" 
-    sub="Access docs" 
-  />
-  <MenuButton 
-    onClick={() => setActiveTab("guardians")} 
-    icon={<Users size={20}/>} 
-    label="Guardians" 
-    sub="Manage trust" 
-  />
-
-  {/* Row 2 */}
-  <MenuButton 
-    onClick={() => setActiveTab("wealth")} // Fixed: Added Trigger
-    icon={<Briefcase size={20}/>} 
-    label="Wealth" 
-    sub="Asset discovery" 
-  />
-  <MenuButton 
-    onClick={() => setActiveTab("legacy")} // Fixed: Added Trigger
-    icon={<Heart size={20}/>} 
-    label="Legacy" 
-    sub="Digital wishes" 
-  />
-
-  {/* Row 3 */}
-
-  <MenuButton 
-    onClick={() => setActiveTab("medical")} // Fixed: Added Trigger
-    icon={<Activity size={20}/>} 
-    label="Medical" 
-    sub="Emergency info" 
-  />
-    <MenuButton 
-    onClick={() => setActiveTab("claim")}
-    icon={<Zap size={20}/>} 
-    label="Quick Claim" 
-    sub="Start Payout" 
-    highlight 
-  />
-</div>
+              {/* Action Grid */}
+              <div className="grid grid-cols-2 gap-4 w-full mt-6">
+                <MenuButton onClick={() => setActiveTab("vault")} icon={<Lock size={20}/>} label={t.vault} sub={t.vault_sub} />
+                <MenuButton onClick={() => setActiveTab("guardians")} icon={<Users size={20}/>} label={t.guardians} sub={t.guardians_sub} />
+                <MenuButton onClick={() => setActiveTab("wealth")} icon={<Briefcase size={20}/>} label={t.wealth} sub={t.wealth_sub} />
+                <MenuButton onClick={() => setActiveTab("legacy")} icon={<Heart size={20}/>} label={t.legacy} sub={t.legacy_sub} />
+                <MenuButton onClick={() => setActiveTab("medical")} icon={<Activity size={20}/>} label={t.medical} sub={t.medical_sub} />
+                <MenuButton onClick={() => setActiveTab("claim")} icon={<Zap size={20}/>} label={t.claim} sub={t.claim_sub} highlight />
+              </div>
             </motion.div>
           )}
 
-          {activeTab === "vault" && (
-            <motion.div 
-              key="vault"
-              initial={{ opacity: 0, x: 10 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -10 }}
-              className="w-full"
-            >
-               <VaultView />
-            </motion.div>
-          )}
-
-          {activeTab === "guardians" && (
-            <motion.div 
-              key="guardians"
-              initial={{ opacity: 0, x: 10 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -10 }}
-              className="w-full"
-            >
-               <GuardiansView />
-            </motion.div>
-          )}
-
-          {activeTab === "claim" && (
-  <motion.div key="claim" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-    <ClaimFlow />
-  </motion.div>
-)}
-{activeTab === "wealth" && <motion.div key="wealth"><WealthView /></motion.div>}
-        {activeTab === "medical" && <motion.div key="medical"><MedicalView /></motion.div>}
-        {activeTab === "legacy" && <motion.div key="legacy"><LegacyView /></motion.div>}
-
-          
+          {activeTab === "vault" && <motion.div key="vault"><VaultView t={t.subpages} /></motion.div>}
+          {activeTab === "guardians" && <motion.div key="guardians"><GuardiansView t={t.subpages} /></motion.div>}
+          {activeTab === "claim" && <motion.div key="claim"><ClaimFlow t={t.subpages} /></motion.div>}
+          {activeTab === "wealth" && <motion.div key="wealth"><WealthView t={t.subpages} /></motion.div>}
+          {activeTab === "medical" && <motion.div key="medical"><MedicalView t={t.subpages} /></motion.div>}
+          {activeTab === "legacy" && <motion.div key="legacy"><LegacyView t={t.subpages} /></motion.div>}
         </AnimatePresence>
       </div>
 
-      {/* Mobile Navigation Dock */}
       <nav className="fixed bottom-8 w-[90%] max-w-sm bg-white/80 backdrop-blur-xl border border-slate-200/50 rounded-full p-2 flex justify-around items-center shadow-[0_10px_40px_rgba(0,0,0,0.08)]">
-        <button 
-          onClick={() => setActiveTab("home")} 
-          className={`p-3 rounded-full transition-all ${activeTab === 'home' ? 'text-eternal-gold bg-eternal-gold/5' : 'text-slate-300 hover:text-slate-400'}`}
-        >
+        <button onClick={() => setActiveTab("home")} className={`p-3 rounded-full transition-all ${activeTab === 'home' ? 'text-eternal-gold bg-eternal-gold/5' : 'text-slate-300'}`}>
           <ShieldCheck size={24} />
         </button>
-        <button 
-          onClick={() => setActiveTab("vault")} 
-          className={`p-3 rounded-full transition-all ${activeTab === 'vault' ? 'text-eternal-gold bg-eternal-gold/5' : 'text-slate-300 hover:text-slate-400'}`}
-        >
+        <button onClick={() => setActiveTab("vault")} className={`p-3 rounded-full transition-all ${activeTab === 'vault' ? 'text-eternal-gold bg-eternal-gold/5' : 'text-slate-300'}`}>
           <Lock size={24} />
         </button>
-        <button 
-          onClick={() => setActiveTab("guardians")} 
-          className={`p-3 rounded-full transition-all ${activeTab === 'guardians' ? 'text-eternal-gold bg-eternal-gold/5' : 'text-slate-300 hover:text-slate-400'}`}
-        >
+        <button onClick={() => setActiveTab("guardians")} className={`p-3 rounded-full transition-all ${activeTab === 'guardians' ? 'text-eternal-gold bg-eternal-gold/5' : 'text-slate-300'}`}>
           <Users size={24} />
         </button>
       </nav>
-      <LiveChat />
+      
+      {/* Pass name to LiveChat for localized greetings */}
+      <LiveChat t={t.subpages} userName={userName} />
     </main>
   );
 }
