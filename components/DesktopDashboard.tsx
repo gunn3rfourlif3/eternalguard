@@ -5,6 +5,7 @@ import { ShieldCheck, Lock, Briefcase, Settings } from "lucide-react";
 import GlassCard from "./GlassCard";
 import LiveChat from "./LiveChat";
 import AllPillars from "./AllPillars";
+import VerificationCard from "./VerificationCard";
 import VaultView from "./VaultView";
 import GuardiansView from "./GuardiansView";
 import ClaimFlow from "./ClaimFlow";
@@ -15,6 +16,7 @@ import LegacyView from "./LegacyView";
 export default function DesktopDashboard({ t, lang, userName, activeTab, setActiveTab, toggleLanguage, format }: any) {
   return (
     <div className="flex h-full p-6 gap-6 max-w-[1750px] mx-auto w-full">
+      {/* Fixed Sidebar Navigation */}
       <nav className="w-24 bg-white/40 backdrop-blur-3xl border border-white/60 rounded-[3.5rem] flex flex-col items-center py-12 gap-8 shadow-sm">
         <div className="w-14 h-14 bg-eternal-gold rounded-2xl flex items-center justify-center text-white shadow-xl shadow-eternal-gold/20 mb-6">
           <ShieldCheck size={28} />
@@ -22,9 +24,12 @@ export default function DesktopDashboard({ t, lang, userName, activeTab, setActi
         <NavIcon Icon={ShieldCheck} active={activeTab === "home"} onClick={() => setActiveTab("home")} />
         <NavIcon Icon={Lock} active={activeTab === "vault"} onClick={() => setActiveTab("vault")} />
         <NavIcon Icon={Briefcase} active={activeTab === "wealth"} onClick={() => setActiveTab("wealth")} />
-        <div className="mt-auto"><Settings className="text-slate-300 hover:text-slate-600 cursor-pointer" size={24} /></div>
+        <div className="mt-auto">
+          <Settings className="text-slate-300 hover:text-slate-600 cursor-pointer transition-colors" size={24} />
+        </div>
       </nav>
 
+      {/* Main Content Area */}
       <main className="flex-1 overflow-y-auto no-scrollbar pt-8">
         <header className="flex justify-between items-start px-6 mb-10">
           <motion.div key={lang} initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }}>
@@ -39,12 +44,20 @@ export default function DesktopDashboard({ t, lang, userName, activeTab, setActi
           </button>
         </header>
 
-        <div className="grid grid-cols-2 gap-6 pb-12 px-6">
+        <div className="px-6">
           <AnimatePresence mode="wait">
             {activeTab === "home" ? (
-              <AllPillars t={t} setActiveTab={setActiveTab} desktop />
+              <motion.div key="home-grid" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}>
+                {/* Progress Indicator Card */}
+                <VerificationCard percentage={85} t={t} />
+                
+                {/* 2-Column Grid for Pillars */}
+                <div className="grid grid-cols-2 gap-6 pb-12">
+                  <AllPillars t={t} setActiveTab={setActiveTab} desktop />
+                </div>
+              </motion.div>
             ) : (
-              <motion.div key="subpage" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="col-span-2">
+              <motion.div key="subpage" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="pb-12">
                 {activeTab === "vault" && <VaultView t={t.subpages} />}
                 {activeTab === "guardians" && <GuardiansView t={t.subpages} />}
                 {activeTab === "wealth" && <WealthView t={t.subpages} />}
@@ -57,8 +70,11 @@ export default function DesktopDashboard({ t, lang, userName, activeTab, setActi
         </div>
       </main>
 
+      {/* Concierge Sidebar */}
       <aside className="w-[450px] py-4">
-        <GlassCard className="h-full"><LiveChat t={t.subpages} userName={userName} inline={true} /></GlassCard>
+        <GlassCard className="h-full">
+          <LiveChat t={t.subpages} userName={userName} inline={true} />
+        </GlassCard>
       </aside>
     </div>
   );
