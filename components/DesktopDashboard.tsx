@@ -1,7 +1,7 @@
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
-import { ShieldCheck, Lock, Briefcase, Settings } from "lucide-react";
+import { LogOut, ShieldCheck, Lock, Briefcase, Settings } from "lucide-react";
 import GlassCard from "./GlassCard";
 import LiveChat from "./LiveChat";
 import AllPillars from "./AllPillars";
@@ -14,7 +14,7 @@ import WealthView from "./WealthView";
 import MedicalView from "./MedicalView";
 import LegacyView from "./LegacyView";
 
-export default function DesktopDashboard({ t, lang, userName, activeTab, setActiveTab, toggleLanguage, format }: any) {
+export default function DesktopDashboard({ t, handleLogout, lang, userName, activeTab, setActiveTab, toggleLanguage, format }: any) {
   return (
     <div className="flex h-full p-6 gap-6 max-w-[1750px] mx-auto w-full">
       {/* Sidebar Navigation */}
@@ -25,7 +25,16 @@ export default function DesktopDashboard({ t, lang, userName, activeTab, setActi
         <NavIcon Icon={ShieldCheck} active={activeTab === "home" || activeTab === "payments"} onClick={() => setActiveTab("home")} />
         <NavIcon Icon={Lock} active={activeTab === "vault"} onClick={() => setActiveTab("vault")} />
         <NavIcon Icon={Briefcase} active={activeTab === "wealth"} onClick={() => setActiveTab("wealth")} />
-        <div className="mt-auto"><Settings className="text-slate-300 hover:text-slate-600 cursor-pointer" size={24} /></div>
+        <div className="mt-auto flex flex-col gap-6">
+          <button 
+            onClick={handleLogout}
+            className="p-4 rounded-2xl text-slate-300 hover:text-red-500 hover:bg-red-50 transition-all"
+            title="Logout"
+          >
+            <LogOut size={24} />
+          </button>
+          <NavIcon Icon={Settings} onClick={() => {}} />
+        </div>
       </nav>
 
       {/* Main Feed */}

@@ -1,7 +1,7 @@
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
-import { Lock, Headphones, ShieldCheck } from "lucide-react";
+import { Lock, Headphones, ShieldCheck, LogOut } from "lucide-react";
 import AllPillars from "./AllPillars";
 import VerificationCard from "./VerificationCard";
 import PaymentHistory from "./PaymentHistory";
@@ -12,11 +12,19 @@ import WealthView from "./WealthView";
 import MedicalView from "./MedicalView";
 import LegacyView from "./LegacyView";
 
-export default function MobileDashboard({ t, lang, userName, activeTab, setActiveTab, toggleLanguage, format }: any) {
+export default function MobileDashboard({ t, lang, userName, activeTab, setActiveTab, toggleLanguage, format, handleLogout, isPremiumPaid }: any) {
   return (
     <div className="flex flex-col h-full overflow-hidden">
       <header className="flex items-center justify-between px-6 pt-10 pb-4">
         <div className="text-[10px] font-bold text-slate-400 uppercase tracking-tight">EternalGuard Support</div>
+
+        <button 
+          onClick={handleLogout}
+          className="flex items-center gap-2 text-[10px] font-black text-slate-400 uppercase tracking-widest hover:text-red-500 transition-colors"
+        >
+          <LogOut size={16} className="text-slate-300" />
+          {t.logout || "Logout"}
+        </button>
         <button onClick={toggleLanguage} className="text-[10px] font-bold uppercase tracking-widest text-eternal-gold">
           {t.lang_name}
         </button>
