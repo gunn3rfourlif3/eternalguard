@@ -5,17 +5,14 @@ import { Pool } from 'pg'
 const globalForPrisma = global as unknown as { prisma: PrismaClient }
 
 const pool = new Pool({
-  // SWAP THIS: Use the specific Instance Endpoint instead of the Cluster Endpoint
-  host: 'eternalguard.cn6eqccuwehr.eu-north-1.rds.amazonaws.com', 
+  host: process.env.DATABASE_HOST,
   port: 5432,
-  user: 'postgres',
-  password: 'Arsenal.fclub2027',
-  database: 'postgres',
+  user: process.env.DATABASE_USER,
+  password: process.env.DATABASE_PASSWORD,
+  database: process.env.DATABASE_NAME,
   ssl: {
     rejectUnauthorized: false,
   },
-  // Aurora sometimes needs a longer window to establish the first connection
-  connectionTimeoutMillis: 30000, 
 })
 
 const adapter = new PrismaPg(pool)
