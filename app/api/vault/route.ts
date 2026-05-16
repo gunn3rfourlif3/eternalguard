@@ -1,43 +1,40 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { encrypt, decrypt } from '@/lib/encryption';
+import { getServerSession } from "next-auth/next";
 
-export async function GET(request: Request) {
+export async function GET() {
   try {
-    const { searchParams } = new URL(request.url);
-    const userId = searchParams.get('userId');
+    // 1. Get the session from the server (secure)
+    const session = await getServerSession();
 
-    if (!userId) {
-      return NextResponse.json({ error: 'User ID required' }, { status: 400 });
+    // 2. If no session, block access
+    if (!session || !session.user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
+    // 3. Fetch items belonging ONLY to this user's email
     const items = await prisma.vaultItem.findMany({
-      where: { userId },
+      where: { 
+        user: { email: session.user.email! } 
+      },
       orderBy: { createdAt: 'desc' },
     });
 
-    // SAFE DECRYPTION: Checks if content is in the encrypted format (iv:authTag:content)
+    // 4. Decrypt the content
     const decryptedItems = items.map(item => {
       try {
-        // Our encrypted format always contains ':' separators
-        if (item.content && item.content.includes(':')) {
-          return {
-            ...item,
-            content: decrypt(item.content)
-          };
-        }
-        // Return legacy plain-text as-is to avoid 500 errors
-        return item; 
+        return item.content.includes(':') 
+          ? { ...item, content: decrypt(item.content) } 
+          : item;
       } catch (e) {
-        console.error(`Failed to decrypt item ${item.id}:`, e);
         return { ...item, content: "[Decryption Error]" };
       }
     });
 
     return NextResponse.json({ success: true, items: decryptedItems });
-  } catch (error: any) {
-    console.error('Vault GET Error:', error);
-    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+  } catch (error) {
+    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
 }
 

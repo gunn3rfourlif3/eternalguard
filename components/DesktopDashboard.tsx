@@ -14,7 +14,7 @@ import WealthView from "./WealthView";
 import MedicalView from "./MedicalView";
 import LegacyView from "./LegacyView";
 
-export default function DesktopDashboard({ t, handleLogout, lang, userName, activeTab, setActiveTab, toggleLanguage, format }: any) {
+export default function DesktopDashboard({ t, handleLogout, lang, userName, activeTab, setActiveTab, toggleLanguage, format, percentage, isPremiumPaid }: any) {
   return (
     <div className="flex h-full p-6 gap-6 max-w-[1750px] mx-auto w-full">
       {/* Sidebar Navigation */}
@@ -57,8 +57,8 @@ export default function DesktopDashboard({ t, handleLogout, lang, userName, acti
               <motion.div key="home" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}>
                 {/* Linked Verification Card */}
                 <VerificationCard 
-                  percentage={85} 
-                  isPremiumPaid={true} 
+                  percentage={percentage} 
+                  isPremiumPaid={isPremiumPaid} 
                   t={t} 
                   onViewPayments={() => setActiveTab("payments")} 
                 />

@@ -12,7 +12,7 @@ import WealthView from "./WealthView";
 import MedicalView from "./MedicalView";
 import LegacyView from "./LegacyView";
 
-export default function MobileDashboard({ t, lang, userName, activeTab, setActiveTab, toggleLanguage, format, handleLogout, isPremiumPaid }: any) {
+export default function MobileDashboard({ t, lang, userName, activeTab, setActiveTab, toggleLanguage, format, handleLogout, isPremiumPaid, percentage }: any) {
   return (
     <div className="flex flex-col h-full overflow-hidden">
       <header className="flex items-center justify-between px-6 pt-10 pb-4">
@@ -41,8 +41,8 @@ export default function MobileDashboard({ t, lang, userName, activeTab, setActiv
           {activeTab === "home" ? (
             <motion.div key="home" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex flex-col gap-3">
               <VerificationCard 
-                percentage={85} 
-                isPremiumPaid={false} 
+                percentage={percentage} 
+                isPremiumPaid={isPremiumPaid} 
                 t={t} 
                 onViewPayments={() => setActiveTab("payments")} 
               />
