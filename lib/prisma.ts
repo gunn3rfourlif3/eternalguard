@@ -4,6 +4,10 @@ import { Pool } from 'pg'
 
 const globalForPrisma = global as unknown as { prisma: PrismaClient }
 
+console.log("Attempting connection to:", process.env.DATABASE_HOST);
+console.log("User:", process.env.DATABASE_USER);
+// Do NOT log the password!
+
 const pool = new Pool({
   host: process.env.DATABASE_HOST,
   port: 5432,

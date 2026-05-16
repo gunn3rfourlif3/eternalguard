@@ -1,8 +1,10 @@
-$body = @{
-    fullName = "Test User"
-    email = "test@eternalguard.com"
-    securityPin = "123456"
-} | ConvertTo-Json
+$body = @'
+{
+    "fullName": "Test User",
+    "email": "vernon6@eternalguard.com",
+    "securityPin": "1234567"
+}
+'@
 
 Invoke-RestMethod -Uri "http://localhost:3000/api/register" `
       -Method Post `

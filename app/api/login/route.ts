@@ -1,51 +1,60 @@
 import { NextResponse } from 'next/server';
-import bcrypt from 'bcryptjs';
+import { prisma } from '@/lib/prisma';
 import jwt from 'jsonwebtoken';
-import { prisma } from '@/lib/prisma'; // Use the fixed singleton!
 
-export async function POST(req: Request) {
+export async function POST(request: Request) {
   try {
-    const { email, password } = await req.json();
+    const body = await request.json();
+    const { email, securityPin } = body;
 
-    // 1. Find user
+    // 1. Validation
+    if (!email || !securityPin) {
+      return NextResponse.json(
+        { error: 'Missing credentials' },
+        { status: 400 }
+      );
+    }
+
+    // 2. Find user in RDS
     const user = await prisma.user.findUnique({
       where: { email },
     });
 
-    if (!user) {
-      return NextResponse.json({ error: 'Invalid credentials' }, { status: 401 });
+    // 3. Compare securityPin directly (Matching your working registration logic)
+    if (!user || user.securityPin !== securityPin) {
+      return NextResponse.json(
+        { error: 'Invalid credentials' },
+        { status: 401 }
+      );
     }
 
-    // 2. Verify password
-    const isPasswordValid = await bcrypt.compare(password, user.password);
-    if (!isPasswordValid) {
-      return NextResponse.json({ error: 'Invalid credentials' }, { status: 401 });
-    }
-
-    // 3. Generate JWT
+    // 4. Create session token
     const token = jwt.sign(
-      { userId: user.id, email: user.email },
-      process.env.JWT_SECRET || 'fallback-secret-for-dev',
+      { userId: user.id },
+      process.env.JWT_SECRET || 'dev_secret',
       { expiresIn: '8h' }
     );
 
     const response = NextResponse.json({ 
       success: true, 
-      user: { id: user.id, email: user.email } 
+      message: "Login successful" 
     });
 
-    // 4. Set HTTP-Only Cookie
+    // 5. Set auth cookie
     response.cookies.set('auth-token', token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
-      maxAge: 60 * 60 * 8, // 8 hours
+      sameSite: 'strict',
+      maxAge: 28800,
       path: '/',
     });
 
     return response;
   } catch (error) {
     console.error('Login error:', error);
-    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+    return NextResponse.json(
+      { error: 'Internal Server Error' },
+      { status: 500 }
+    );
   }
 }
