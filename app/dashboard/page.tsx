@@ -1,11 +1,11 @@
 'use client';
 
 import { useSession, signOut } from 'next-auth/react';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 
 // Import your existing logic and components
-import { locales, LocaleKey } from "@/lib/locales"; // RESTORES LABELS
+import { locales, LocaleKey } from "@/lib/locales"; 
 import DashboardBackground from "@/components/Background";
 import DesktopDashboard from '@/components/DesktopDashboard';
 import MobileDashboard from '@/components/MobileDashboard';
@@ -14,13 +14,13 @@ export default function DashboardPage() {
   const { data: session, status } = useSession();
   const router = useRouter();
   
-  // State from your original entry point
   const [activeTab, setActiveTab] = useState("home");
   const [lang, setLang] = useState<LocaleKey>("en");
   const [userData, setUserData] = useState<any>(null);
+  const [percentage, setPercentage] = useState(0); // Dedicated progress state
   const [isMobile, setIsMobile] = useState(false);
 
-  // 1. Restore Responsive Logic
+  // 1. Responsive Logic
   useEffect(() => {
     const checkMobile = () => setIsMobile(window.innerWidth < 1024);
     checkMobile();
@@ -28,20 +28,41 @@ export default function DashboardPage() {
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
-  // 2. Restore Auth & RDS Data Hydration
+  // 2. Global Verification Fetcher
+  const fetchGlobalProgress = useCallback(async () => {
+    try {
+      const res = await fetch('/api/vault?progress=true');
+      const data = await res.json();
+      if (data.success) {
+        setPercentage(data.percentage);
+      }
+    } catch (error) {
+      console.error("Progress fetch error:", error);
+    }
+  }, []);
+
+  // 3. Auth & RDS Data Hydration
   useEffect(() => {
     if (status === 'unauthenticated') {
       router.push('/login');
     } else if (status === 'authenticated') {
+      // Fetch user profile
       fetch('/api/user/me')
         .then(res => res.json())
         .then(data => {
-          if (data.success) setUserData(data.user);
+          if (data.success) {
+            setUserData(data.user);
+            // Fallback to DB percentage if the live calculation isn't ready
+            setPercentage(data.user.verificationPercentage || 0);
+          }
         });
+      
+      // Fetch live progress calculation
+      fetchGlobalProgress();
     }
-  }, [status, router]);
+  }, [status, router, fetchGlobalProgress]);
 
-  // 3. Restore your original Formatting & Toggle Logic
+  // 4. Formatting & Toggle Logic
   const t = locales[lang];
 
   const format = (str: string, name: string) => {
@@ -59,17 +80,19 @@ export default function DashboardPage() {
     return <div className="h-screen w-screen bg-slate-50 flex items-center justify-center font-black italic text-eternal-gold animate-pulse uppercase">ETERNAL GUARD...</div>;
   }
 
-  // 4. Consolidate props for your UI
+  // 5. Consolidate props
   const commonProps = { 
     t, 
     lang, 
     userName: userData.fullName, 
     isPremiumPaid: userData.isPremiumPaid, 
-    percentage: userData.verificationPercentage,
+    percentage, // Use the live state instead of userData static value
     activeTab, 
     setActiveTab, 
     toggleLanguage, 
     format,
+    userId: session?.user?.id, // Pass userId for the Modal
+    onRefresh: fetchGlobalProgress, // Pass refresh trigger
     handleLogout: () => signOut({ callbackUrl: '/login' })
   };
 

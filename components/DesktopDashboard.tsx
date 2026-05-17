@@ -16,7 +16,7 @@ import MedicalView from "./MedicalView";
 import LegacyView from "./LegacyView";
 import AddAssetModal from "./AddAssetModal";
 
-export default function DesktopDashboard({ t, handleLogout, lang, userName, activeTab, setActiveTab, toggleLanguage, format, percentage, isPremiumPaid, userId }: any) {
+export default function DesktopDashboard({ t, handleLogout, lang, userName, activeTab, setActiveTab, toggleLanguage, format, percentage, isPremiumPaid, userId, onRefresh }: any) {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   return (
@@ -100,12 +100,12 @@ export default function DesktopDashboard({ t, handleLogout, lang, userName, acti
       </aside>
 
       {/* MODAL INTEGRATION */}
-      <AddAssetModal 
-        isOpen={isModalOpen} 
-        onClose={() => setIsModalOpen(false)} 
-        userId={userId} 
-        onRefresh={() => window.location.reload()} 
-      />
+<AddAssetModal 
+  isOpen={isModalOpen} 
+  onClose={() => setIsModalOpen(false)} 
+  userId={userId} 
+  onRefresh={onRefresh} // This triggers fetchGlobalProgress in page.tsx
+/>
     </div>
   );
 }

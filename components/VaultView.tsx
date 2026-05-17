@@ -2,22 +2,43 @@
 
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Key, Lock, ShieldCheck, Plus, ChevronRight, Loader2, Fingerprint } from "lucide-react";
+import { Key, Lock, ShieldCheck, Plus, ChevronRight, Loader2, Fingerprint, Trash2 } from "lucide-react";
+import DeleteModal from "@/components/DeleteModal";
 
-export default function VaultView({ t }: any) {
+export default function VaultView({ t, onRefresh }: any) {
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [deleteTarget, setDeleteTarget] = useState<any>(null);
+
+  const loadData = async () => {
+    try {
+      const res = await fetch('/api/vault?category=Vault');
+      const data = await res.json();
+      if (data.success) setItems(data.items);
+    } catch (err) { 
+      console.error(err); 
+    } finally { 
+      setLoading(false); 
+    }
+  };
 
   useEffect(() => {
-    async function loadData() {
-      try {
-        const res = await fetch('/api/vault?category=Vault');
-        const data = await res.json();
-        if (data.success) setItems(data.items);
-      } catch (err) { console.error(err); } finally { setLoading(false); }
-    }
     loadData();
   }, []);
+
+  const confirmDelete = async () => {
+    if (!deleteTarget) return;
+    try {
+      const res = await fetch(`/api/vault?id=${deleteTarget.id}`, { method: 'DELETE' });
+      if (res.ok) {
+        setDeleteTarget(null);
+        await loadData();
+        if (onRefresh) onRefresh();
+      }
+    } catch (err) {
+      console.error("Delete failed:", err);
+    }
+  };
 
   const getIcon = (type: string) => {
     switch (type) {
@@ -33,7 +54,7 @@ export default function VaultView({ t }: any) {
       <div className="flex items-center justify-between px-2">
         <h3 className="text-lg font-bold text-slate-800">{t?.vault_title || "Master Vault"}</h3>
         <button className="text-eternal-gold text-xs font-bold flex items-center gap-1 hover:opacity-70 transition-opacity">
-          <Plus size={14} /> {t?.add_item || "Add Item"}
+          <Plus size={14} /> {t?.add_item || "Add"}
         </button>
       </div>
 
@@ -43,7 +64,14 @@ export default function VaultView({ t }: any) {
             <div className="flex justify-center py-10"><Loader2 className="animate-spin text-eternal-gold" /></div>
           ) : items.length > 0 ? (
             items.map((item: any) => (
-              <motion.div key={item.id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="bg-white border border-slate-100 p-4 rounded-2xl flex items-center justify-between group cursor-pointer hover:border-eternal-gold/30 shadow-sm">
+              <motion.div 
+                key={item.id} 
+                layout
+                initial={{ opacity: 0, y: 10 }} 
+                animate={{ opacity: 1, y: 0 }} 
+                exit={{ opacity: 0, scale: 0.95 }}
+                className="bg-white border border-slate-100 p-4 rounded-2xl flex items-center justify-between group cursor-pointer hover:border-eternal-gold/30 shadow-sm transition-all"
+              >
                 <div className="flex items-center gap-4">
                   <div className="p-3 bg-slate-50 rounded-xl text-eternal-gold">{getIcon(item.type)}</div>
                   <div>
@@ -51,9 +79,17 @@ export default function VaultView({ t }: any) {
                     <p className="text-[10px] text-slate-400 font-medium uppercase tracking-tight">{item.type || "Credential"}</p>
                   </div>
                 </div>
-                <div className="flex items-center gap-2">
-                  <span className="text-sm font-bold text-slate-700">••••••••</span>
-                  <ChevronRight size={14} className="text-slate-300 group-hover:text-eternal-gold" />
+                <div className="flex items-center gap-3">
+                  <button 
+                    onClick={(e) => { e.stopPropagation(); setDeleteTarget(item); }} 
+                    className="opacity-0 group-hover:opacity-100 p-2 text-slate-300 hover:text-red-500 transition-all"
+                  >
+                    <Trash2 size={14} />
+                  </button>
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm font-bold text-slate-700">••••••••</span>
+                    <ChevronRight size={14} className="text-slate-300 group-hover:text-eternal-gold" />
+                  </div>
                 </div>
               </motion.div>
             ))
@@ -62,6 +98,13 @@ export default function VaultView({ t }: any) {
           )}
         </AnimatePresence>
       </div>
+
+      <DeleteModal 
+        isOpen={!!deleteTarget} 
+        onClose={() => setDeleteTarget(null)} 
+        onConfirm={confirmDelete}
+        title={deleteTarget?.title}
+      />
     </div>
   );
 }
