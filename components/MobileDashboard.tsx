@@ -1,7 +1,8 @@
 "use client";
 
+import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Lock, Headphones, ShieldCheck, LogOut } from "lucide-react";
+import { Lock, ShieldCheck, LogOut, Plus } from "lucide-react";
 import AllPillars from "./AllPillars";
 import VerificationCard from "./VerificationCard";
 import PaymentHistory from "./PaymentHistory";
@@ -11,16 +12,19 @@ import ClaimFlow from "./ClaimFlow";
 import WealthView from "./WealthView";
 import MedicalView from "./MedicalView";
 import LegacyView from "./LegacyView";
+import AddAssetModal from "./AddAssetModal";
 
-export default function MobileDashboard({ t, lang, userName, activeTab, setActiveTab, toggleLanguage, format, handleLogout, isPremiumPaid, percentage }: any) {
+export default function MobileDashboard({ t, lang, userName, activeTab, setActiveTab, toggleLanguage, format, handleLogout, isPremiumPaid, percentage, userId }: any) {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
   return (
     <div className="flex flex-col h-full overflow-hidden">
       <header className="flex items-center justify-between px-6 pt-10 pb-4">
-        <div className="text-[10px] font-bold text-slate-400 uppercase tracking-tight">EternalGuard Support</div>
+        <div className="text-[10px] font-bold text-slate-400 uppercase tracking-tight italic">EternalGuard Cloud</div>
 
         <button 
           onClick={handleLogout}
-          className="flex items-center gap-2 text-[10px] font-black text-slate-400 uppercase tracking-widest hover:text-red-500 transition-colors"
+          className="flex items-center gap-2 text-[10px] font-black text-slate-400 uppercase tracking-widest"
         >
           <LogOut size={16} className="text-slate-300" />
           {t.logout || "Logout"}
@@ -68,11 +72,28 @@ export default function MobileDashboard({ t, lang, userName, activeTab, setActiv
         </AnimatePresence>
       </main>
 
+      {/* Floating Bottom Nav */}
       <nav className="fixed bottom-8 left-1/2 -translate-x-1/2 w-[90%] bg-white/80 backdrop-blur-2xl border border-slate-200/50 rounded-full p-2 flex justify-around shadow-xl z-50">
         <button onClick={() => setActiveTab("home")} className={`p-4 rounded-2xl ${activeTab === "home" || activeTab === "payments" ? "text-eternal-gold bg-eternal-gold/5" : "text-slate-300"}`}><ShieldCheck size={24} /></button>
+        
+        {/* MODAL TRIGGER */}
+        <button 
+          onClick={() => setIsModalOpen(true)}
+          className="p-3 text-white bg-eternal-gold rounded-full shadow-lg shadow-eternal-gold/30 -translate-y-4 active:scale-95 transition-transform"
+        >
+          <Plus size={32} />
+        </button>
+
         <button onClick={() => setActiveTab("vault")} className={`p-4 rounded-2xl ${activeTab === "vault" ? "text-eternal-gold bg-eternal-gold/5" : "text-slate-300"}`}><Lock size={24} /></button>
-        <button className="p-3 text-white bg-eternal-gold rounded-full shadow-lg shadow-eternal-gold/30"><Headphones size={24}/></button>
       </nav>
+
+      {/* MODAL INTEGRATION */}
+      <AddAssetModal 
+        isOpen={isModalOpen} 
+        onClose={() => setIsModalOpen(false)} 
+        userId={userId} 
+        onRefresh={() => window.location.reload()} 
+      />
     </div>
   );
 }

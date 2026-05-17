@@ -1,7 +1,8 @@
 "use client";
 
+import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { LogOut, ShieldCheck, Lock, Briefcase, Settings } from "lucide-react";
+import { LogOut, ShieldCheck, Lock, Briefcase, Settings, Plus } from "lucide-react";
 import GlassCard from "./GlassCard";
 import LiveChat from "./LiveChat";
 import AllPillars from "./AllPillars";
@@ -13,18 +14,25 @@ import ClaimFlow from "./ClaimFlow";
 import WealthView from "./WealthView";
 import MedicalView from "./MedicalView";
 import LegacyView from "./LegacyView";
+import AddAssetModal from "./AddAssetModal";
 
-export default function DesktopDashboard({ t, handleLogout, lang, userName, activeTab, setActiveTab, toggleLanguage, format, percentage, isPremiumPaid }: any) {
+export default function DesktopDashboard({ t, handleLogout, lang, userName, activeTab, setActiveTab, toggleLanguage, format, percentage, isPremiumPaid, userId }: any) {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
   return (
     <div className="flex h-full p-6 gap-6 max-w-[1750px] mx-auto w-full">
       {/* Sidebar Navigation */}
       <nav className="w-24 bg-white/40 backdrop-blur-3xl border border-white/60 rounded-[3.5rem] flex flex-col items-center py-12 gap-8 shadow-sm">
-        <div className="w-14 h-14 bg-eternal-gold rounded-2xl flex items-center justify-center text-white shadow-xl shadow-eternal-gold/20 mb-6">
-          <ShieldCheck size={28} />
+        <div 
+          onClick={() => setIsModalOpen(true)}
+          className="w-14 h-14 bg-eternal-gold rounded-2xl flex items-center justify-center text-white shadow-xl shadow-eternal-gold/20 mb-6 cursor-pointer hover:scale-105 transition-transform"
+        >
+          <Plus size={28} />
         </div>
         <NavIcon Icon={ShieldCheck} active={activeTab === "home" || activeTab === "payments"} onClick={() => setActiveTab("home")} />
         <NavIcon Icon={Lock} active={activeTab === "vault"} onClick={() => setActiveTab("vault")} />
         <NavIcon Icon={Briefcase} active={activeTab === "wealth"} onClick={() => setActiveTab("wealth")} />
+        
         <div className="mt-auto flex flex-col gap-6">
           <button 
             onClick={handleLogout}
@@ -55,7 +63,6 @@ export default function DesktopDashboard({ t, handleLogout, lang, userName, acti
           <AnimatePresence mode="wait">
             {activeTab === "home" ? (
               <motion.div key="home" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}>
-                {/* Linked Verification Card */}
                 <VerificationCard 
                   percentage={percentage} 
                   isPremiumPaid={isPremiumPaid} 
@@ -91,6 +98,14 @@ export default function DesktopDashboard({ t, handleLogout, lang, userName, acti
       <aside className="w-[450px] py-4">
         <GlassCard className="h-full"><LiveChat t={t.subpages} userName={userName} inline={true} /></GlassCard>
       </aside>
+
+      {/* MODAL INTEGRATION */}
+      <AddAssetModal 
+        isOpen={isModalOpen} 
+        onClose={() => setIsModalOpen(false)} 
+        userId={userId} 
+        onRefresh={() => window.location.reload()} 
+      />
     </div>
   );
 }

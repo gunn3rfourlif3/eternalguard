@@ -1,51 +1,65 @@
 "use client";
 
-import { Activity, ShieldPlus, Heart, AlertCircle } from "lucide-react";
+import { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Activity, Plus, Shield, Clipboard, Heart, ChevronRight, Loader2 } from "lucide-react";
 
-interface MedicalViewProps {
-  t: {
-    medical_title?: string;
-    medical_emergency?: string;
-    critical_info?: string;
-    blood_type?: string;
-    medical_aid?: string;
-    allergies?: string;
-    generate_qr?: string;
+export default function MedicalView({ t }: any) {
+  const [items, setItems] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function loadData() {
+      try {
+        const res = await fetch('/api/vault?category=Medical');
+        const data = await res.json();
+        if (data.success) setItems(data.items);
+      } catch (err) { console.error(err); } finally { setLoading(false); }
+    }
+    loadData();
+  }, []);
+
+  const getIcon = (type: string) => {
+    switch (type) {
+      case "policy": return <Shield size={18} />;
+      case "record": return <Clipboard size={18} />;
+      default: return <Activity size={18} />;
+    }
   };
-}
 
-export default function MedicalView({ t }: MedicalViewProps) {
   return (
-    <div className="w-full flex flex-col gap-4 mt-8">
-      <div className="px-2">
-        <h3 className="text-lg font-bold text-slate-800">{t.medical_title || "Medical SOS"}</h3>
-        <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">{t.medical_emergency || "Emergency Access"}</p>
+    <div className="w-full max-w-sm flex flex-col gap-4 mt-8">
+      <div className="flex items-center justify-between px-2">
+        <h3 className="text-lg font-bold text-slate-800">{t?.medical_title || "Health Records"}</h3>
+        <button className="text-eternal-gold text-xs font-bold flex items-center gap-1 hover:opacity-70 transition-opacity">
+          <Plus size={14} /> {t?.add_record || "Add Record"}
+        </button>
       </div>
 
-      <div className="bg-white border border-slate-100 rounded-3xl overflow-hidden shadow-sm">
-        <div className="bg-red-500 p-4 flex items-center justify-between text-white">
-          <span className="text-xs font-bold uppercase tracking-widest">{t.critical_info || "Critical Info"}</span>
-          <Activity size={18} />
-        </div>
-        <div className="p-6 space-y-4">
-          <div className="flex justify-between border-b border-slate-50 pb-2">
-            <span className="text-xs text-slate-400 font-medium">{t.blood_type || "Blood Type"}</span>
-            <span className="text-sm font-bold text-red-600">O Positive</span>
-          </div>
-          <div className="flex justify-between border-b border-slate-50 pb-2">
-            <span className="text-xs text-slate-400 font-medium">{t.medical_aid || "Medical Aid"}</span>
-            <span className="text-sm font-bold text-slate-800">Discovery Health</span>
-          </div>
-          <div className="flex flex-col gap-1">
-            <span className="text-xs text-slate-400 font-medium">{t.allergies || "Allergies"}</span>
-            <span className="text-sm font-bold text-slate-800">Penicillin, Peanuts</span>
-          </div>
-        </div>
+      <div className="space-y-3">
+        <AnimatePresence mode="popLayout">
+          {loading ? (
+            <div className="flex justify-center py-10"><Loader2 className="animate-spin text-eternal-gold" /></div>
+          ) : items.length > 0 ? (
+            items.map((item: any) => (
+              <motion.div key={item.id} initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="bg-white border border-slate-100 p-4 rounded-2xl flex items-center justify-between group cursor-pointer hover:border-eternal-gold/30 shadow-sm">
+                <div className="flex items-center gap-4">
+                  <div className="p-3 bg-slate-50 rounded-xl text-eternal-gold">{getIcon(item.type)}</div>
+                  <div>
+                    <p className="text-sm font-bold text-slate-800">{item.title}</p>
+                    <p className="text-[10px] text-slate-400 font-medium uppercase tracking-tight">{item.type || "Medical"}</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2 font-mono text-xs font-bold text-slate-700 bg-slate-50 px-2 py-1 rounded-md">
+                  {item.content}
+                </div>
+              </motion.div>
+            ))
+          ) : (
+            <p className="text-[10px] text-center text-slate-400 uppercase py-8 font-medium tracking-widest italic">No health data secured</p>
+          )}
+        </AnimatePresence>
       </div>
-
-      <button className="w-full py-4 bg-slate-900 text-white rounded-2xl font-bold text-sm shadow-xl flex items-center justify-center gap-2">
-        {t.generate_qr || "Generate Emergency QR"}
-      </button>
     </div>
   );
 }

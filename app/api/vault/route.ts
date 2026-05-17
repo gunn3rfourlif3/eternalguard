@@ -3,25 +3,28 @@ import { prisma } from '@/lib/prisma';
 import { encrypt, decrypt } from '@/lib/encryption';
 import { getServerSession } from "next-auth/next";
 
-export async function GET() {
+export async function GET(request: Request) { // Added 'request' to access URL params
   try {
-    // 1. Get the session from the server (secure)
     const session = await getServerSession();
 
-    // 2. If no session, block access
     if (!session || !session.user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    // 3. Fetch items belonging ONLY to this user's email
+    // 1. Extract the category from the URL (e.g., /api/vault?category=Medical)
+    const { searchParams } = new URL(request.url);
+    const category = searchParams.get('category');
+
+    // 2. Fetch items with the pillar filter
     const items = await prisma.vaultItem.findMany({
       where: { 
-        user: { email: session.user.email! } 
+        user: { email: session.user.email! },
+        // Use the pillar index we created in the schema
+        ...(category ? { category: { equals: category, mode: 'insensitive' } } : {})
       },
       orderBy: { createdAt: 'desc' },
     });
 
-    // 4. Decrypt the content
     const decryptedItems = items.map(item => {
       try {
         return item.content.includes(':') 
@@ -40,30 +43,35 @@ export async function GET() {
 
 export async function POST(request: Request) {
   try {
-    const body = await request.json();
-    const { userId, title, secret, category } = body;
-
-    if (!userId || !secret) {
-      return NextResponse.json({ error: 'Missing data' }, { status: 400 });
+    const session = await getServerSession();
+    if (!session || !session.user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    // Encrypt the secret before it hits your AWS RDS instance
+    const body = await request.json();
+    const { title, secret, category, type } = body;
+
+    if (!secret || !category) {
+      return NextResponse.json({ error: 'Missing secret or category' }, { status: 400 });
+    }
+
+    // 3. Create entry tied to the logged-in user's email
     const entry = await prisma.vaultItem.create({
       data: {
-        userId,
-        title: title || 'Untitled Secret',
+        title: title || 'Untitled Entry',
         content: encrypt(secret), 
-        category: category || 'General',
+        category: category, // Matches the schema categories like 'Vault' or 'Medical' 
+        type: type || 'Note',
+        user: { connect: { email: session.user.email! } }
       },
     });
 
     return NextResponse.json({ 
       success: true, 
       id: entry.id,
-      message: "Secret encrypted and stored" 
+      message: `${category} item secured` 
     });
   } catch (error: any) {
-    console.error('Vault POST Error:', error);
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
   }
 }

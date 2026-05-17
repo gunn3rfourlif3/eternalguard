@@ -7,14 +7,17 @@ datasource db {
   // URL IS REMOVED FROM HERE IN PRISMA 7
 }
 model VaultItem {
-  id        String   @id @default(uuid())
+  id        String   @id @default(cuid())
   title     String
-  content   String   // This will store your encrypted data
-  category  String   @default("General")
-  userId    String
-  user      User     @relation(fields: [userId], references: [id])
+  content   String   // Encrypted payload
+  category  String   // e.g., 'Vault', 'Medical', 'Wealth', 'Guardians', 'Legacy', 'Claim'
+  type      String?  // e.g., 'Document', 'Note', 'Credential'
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+
+  @@index([userId, category]) // Index for high-speed pillar filtering
 }
 
 model User {
