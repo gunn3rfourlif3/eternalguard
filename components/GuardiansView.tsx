@@ -94,6 +94,7 @@ export default function GuardiansView({ t, onRefresh }: any) {
         onClose={() => setDeleteTarget(null)} 
         onConfirm={confirmDelete}
         title={deleteTarget?.title}
+        t={t} // CHANGE THIS: Pass 't' directly, not 't.subpages'
       />
     </div>
   );

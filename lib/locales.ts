@@ -65,6 +65,13 @@ export const locales = {
       chat_welcome: "How may I assist you with your vault today?",
       chat_placeholder: "Message support...",
       chat_status: "Online",
+      add_item: "Add",
+      confirm_delete_title: "Confirm Deletion",
+      confirm_delete_msg: "Are you sure you want to remove",
+      confirm_delete_warning: "This action is permanent and will decrypt the record from the cloud.",
+      delete_confirm_btn: "Permanently Delete",
+      delete_cancel_btn: "Keep Secure",
+      
     }
   },
   zu: {
@@ -132,6 +139,12 @@ export const locales = {
       chat_welcome: "Ngingakusiza kanjani ngenqolobane yakho namuhla?",
       chat_placeholder: "Thumela umlayezo...",
       chat_status: "Ikhona",
+      add_item: "Engeza",
+      confirm_delete_title: "Qinisekisa Ukususa",
+      confirm_delete_msg: "Uqinisekile ukuthi ufuna ukususa",
+      confirm_delete_warning: "Lokhu kususwa unomphela kusefu.",
+      delete_confirm_btn: "Susa Unomphela",
+      delete_cancel_btn: "Gcina Kuphephile",
 
     }
   },
@@ -200,6 +213,12 @@ export const locales = {
       chat_welcome: "Ndingakunceda njani ngevault yakho namhanje?",
       chat_placeholder: "Thumela umyalezo...",
       chat_status: "Ikhona",
+      add_item: "Faka",
+      confirm_delete_title: "Qinisekisa Ukucinywa",
+      confirm_delete_msg: "Uqinisekile ukuba ufuna ukucima",
+      confirm_delete_warning: "Le ntshukumo isisigxina kwaye icinywa efini.",
+      delete_confirm_btn: "Cima Gqibi",
+      delete_cancel_btn: "Gcina Kukhuselekile",
     }
   },
   af: {
@@ -267,6 +286,12 @@ export const locales = {
       chat_welcome: "Hoe kan ek u vandag met u kluis help?",
       chat_placeholder: "Stuur boodskap...",
       chat_status: "Aanlyn",
+      add_item: "Voeg by",
+      confirm_delete_title: "Bevestig Verwydering",
+      confirm_delete_msg: "Is u seker u wil verwyder",
+      confirm_delete_warning: "Hierdie aksie is permanent en sal die rekord uit die wolk verwyder.",
+      delete_confirm_btn: "Verwyder Permanent",
+      delete_cancel_btn: "Hou Veilig",
     }
   },
   nso: {
@@ -330,14 +355,16 @@ export const locales = {
       claim_type_payout: "Tefo ka Botlalo",
       claim_type_grocery: "Boutšhara ya Dijo",
       claim_status_ready: "E itokišeditše kgopelo",
-      chat_title: "Thekgo ya AI",
-      chat_welcome: "Dumela! Nka go thuša bjang go šireletsa bohwa bja gago lehono?",
-      chat_placeholder: "Mpotšiše se sengwe le se sengwe...",
-      chat_status: "AI Agent e Inthaneteng",
       chat_title: "Thekgo ya EternalGuard",           //Support
       chat_welcome: "Nka go thuša bjang ka sebolokelo sa gago lehono?",
       chat_placeholder: "Romela molaetša...",
       chat_status: "Inthaneteng",
+      add_item: "Lokela e mpsha",
+      confirm_delete_title: "Tiisetsa go Phumula",
+      confirm_delete_msg: "Na o na le nnete ya gore o nyaka go phumula",
+      confirm_delete_warning: "Tiro ye ke ya go ya go ile.",
+      delete_confirm_btn: "Phumula go ya go ile",
+      delete_cancel_btn: "Boloka go bolokegile",
     }
   },
   tn: {
@@ -405,6 +432,12 @@ export const locales = {
       chat_welcome: "Nka go thusa jang ka polokelo ya gago gompieno?",
       chat_placeholder: "Romela molaetsa...",
       chat_status: "Mo Inthaneteng",
+      add_item: "Tsenya e ntšha",
+      confirm_delete_title: "Netefatsa go Ntsha",
+      confirm_delete_msg: "A o na le nnete ya gore o batla go ntsha",
+      confirm_delete_warning: "Tiro e ke ya sennela ruri.",
+      delete_confirm_btn: "Ntsha ka mo go sa feleng",
+      delete_cancel_btn: "Boloka go tshireletsegile",
     }
   },
   st: {
@@ -472,6 +505,12 @@ export const locales = {
       chat_welcome: "Nka go thusa jwang ka polokelo ya gago kajeno?",
       chat_placeholder: "Romela molaetsa...",
       chat_status: "Inthaneteng",
+      add_item: "Kenya e ncha",
+      confirm_delete_title: "Netefatsa ho Tlosa",
+      confirm_delete_msg: "Na u na le bonnete ba hore u batla ho tlosa",
+      confirm_delete_warning: "Ketso ena ke ea moshwelella.",
+      delete_confirm_btn: "Tlosa ka ho sa feleng",
+      delete_cancel_btn: "Boloka ho sireletsehile",
     }
   },
   ts: {
@@ -539,6 +578,12 @@ export const locales = {
       chat_welcome: "Ndzi nga ku pfuna njhani hi vault ya wena namuntlha?",
       chat_placeholder: "Tsalela vutshunguri...",
       chat_status: "Yi kona",
+      add_item: "Nghenisa yintshwa",
+      confirm_delete_title: "Tiyisisa ku Sula",
+      confirm_delete_msg: "Xana u tiyisile leswaku u lava ku sula",
+      confirm_delete_warning: "Xiendlo lexi i xa hilaha ku nga heriki.",
+      delete_confirm_btn: "Sula hilaha ku nga heriki",
+      delete_cancel_btn: "Hlayisa ku hlayisekile",
     }
   },
   ss: {
@@ -606,6 +651,12 @@ export const locales = {
       chat_welcome: "Ngingakusita njani nge-vault yakho namuhla?",
       chat_placeholder: "Bhala umlayeto...",
       chat_status: "Ikhona",
+      add_item: "Faka lensha",
+      confirm_delete_title: "Cinisekisa Kususa",
+      confirm_delete_msg: "Ucinisekile yini kutsi ufuna kususa",
+      confirm_delete_warning: "Loku kususa kwangephidze kubuyiswe.",
+      delete_confirm_btn: "Susa ungalibali",
+      delete_cancel_btn: "Gcina kuvikelekile",
     }
   },
   ve: {
@@ -673,6 +724,12 @@ export const locales = {
       chat_welcome: "Ndi nga vha thusa hani nga vault yavho namusi?",
       chat_placeholder: "Rumelani mulaedza...",
       chat_status: "I hone",
+      add_item: "Dzhensani ntswa",
+      confirm_delete_title: "Khwathisedzani u Phumula",
+      confirm_delete_msg: "Vha na vhungoho ha uri vha ṱoḓa u phumula",
+      confirm_delete_warning: "Izwi zwi itelwa tshoṱhe.",
+      delete_confirm_btn: "Phumula tshoṱhe",
+      delete_cancel_btn: "Vhulungani zwo tsireledzea",
     }
   },
   nr: {
@@ -740,6 +797,12 @@ export const locales = {
       chat_welcome: "Ngingakusiza njani ngekhona lakho namhlanje?",
       chat_placeholder: "Thumela umlayezo...",
       chat_status: "Ikhona",
+      add_item: "Faka entsha",
+      confirm_delete_title: "Qinisekisa Ukususa",
+      confirm_delete_msg: "Uqinisekile bonyana ufuna ukususa",
+      confirm_delete_warning: "Lokhu kususa kwaphela.",
+      delete_confirm_btn: "Susa unomphela",
+      delete_cancel_btn: "Gcina kuvikelekile",
     }
   }
 };
